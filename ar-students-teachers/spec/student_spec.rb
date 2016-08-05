@@ -75,5 +75,54 @@ describe Student do
       )
       expect(@student).to_not be_valid
     end
+
+    it "shouldn't have a teacher id of a teacher that is retired!" do
+      teacher = Teacher.create!(
+        name: "Tim Lu",
+        email: "Joe@joe.com",
+        hire_date: Date.today - 3.years,
+        retirement_date: Date.today
+      )
+      @student.teacher = teacher
+      expect(@student).not_to be_valid
+    end
   end
+
+  context 'callbacks' do
+
+    before(:each) do
+      @teacher = Teacher.create(name: "Joe", email: "Joe@joe.com")
+      @student = Student.new(
+        first_name: 'Kreay',
+        last_name: 'Shawn',
+        birthday: Date.new(1989, 9, 24),
+        gender: 'female',
+        email: 'kreayshawn@oaklandhiphop.net',
+        phone: '(510) 555-1212 x4567'
+      )
+    end
+
+    it "should update the teachers last_student_added_at column every time a student is saved." do 
+      expect(@teacher.last_student_added_at).to be_nil
+      @student.teacher = @teacher
+      @student.save
+      expect(@teacher.last_student_added_at).to eq(Date.today)
+    end
+
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 end
